@@ -34,6 +34,22 @@ class AuthTest extends TestCase
         ]);
     }
 
+    public function test_user_cannot_register_without_passing_validation()
+    {
+        $user = User::factory()->make();
+        $response = $this->json('post', '/api/auth/register', [
+            'name' => '',
+            'email' => 'wrongemail.com',
+            'password' => 'password',
+        ]);
+        $response
+            ->assertStatus(422)
+            ->assertJsonStructure(['message', 'errors']);
+        $this->assertDatabaseMissing('users', [
+            'name' => $user->name,
+        ]);
+    }
+
     public function test_user_can_login()
     {
         $user = User::factory()->create([
