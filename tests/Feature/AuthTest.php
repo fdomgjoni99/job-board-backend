@@ -39,7 +39,7 @@ class AuthTest extends TestCase
         $user = User::factory()->make();
         $response = $this->json('post', '/api/auth/register', [
             'name' => '',
-            'email' => 'wrongemail.com',
+            'email' => 'wrong_email.com',
             'password' => 'password',
         ]);
         $response
