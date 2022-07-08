@@ -17,6 +17,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'about' => 'required|min:50|max:5000',
             'location' => 'required|min:3|max:400',
+            'profile_image' => 'nullable|file|mimes:jpg,png',
             'password' => [
                 'required',
                 'confirmed',
@@ -38,6 +39,7 @@ class AuthController extends Controller
             $request->only(['name', 'about', 'location', 'profile_image'])
         );
         $company->user()->save($user);
+        $request->file('profile_image')->storePublicly('profile-images');
         return response()->json($user->with('userable')->first(), 201);
     }
 
