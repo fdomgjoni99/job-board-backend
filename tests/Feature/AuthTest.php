@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -17,38 +18,50 @@ class AuthTest extends TestCase
      *
      * @return void
      */
-    public function test_user_can_register()
+    public function test_user_can_register_as_company()
     {
         $user = User::factory()->make();
-        $response = $this->json('post', '/api/auth/register', [
+        $company = Company::factory()->make();
+        $response = $this->post('/api/auth/register/company', [
             'name' => $user->name,
             'email' => $user->email,
             'password' => 'passwordA0!',
+            'about' => $company->about,
+            'location' => $company->location,
+            'profile_image' => $company->profile_image,
         ]);
         $response
             ->assertStatus(201)
-            ->assertJsonStructure(['name', 'email', 'created_at']);
+            ->assertJsonStructure(['name', 'email', 'created_at', 'userable']);
         $this->assertDatabaseHas('users', [
             'id' => 1,
             'email' => $user->email,
-        ]);
-    }
-
-    public function test_user_cannot_register_without_passing_validation()
-    {
-        $user = User::factory()->make();
-        $response = $this->json('post', '/api/auth/register', [
-            'name' => '',
-            'email' => 'wrong_email.com',
-            'password' => 'password',
-        ]);
-        $response
-            ->assertStatus(422)
-            ->assertJsonStructure(['message', 'errors']);
-        $this->assertDatabaseMissing('users', [
+            'userable_type' => 'App\\Models\\Company',
+            'userable_id' => 1,
+        ])->assertDatabaseHas('companies', [
+            'id' => 1,
             'name' => $user->name,
         ]);
     }
+
+    // public function test_user_cannot_register_without_passing_validation()
+    // {
+    //     $user = User::factory()->make();
+    //     $response = $this->json('post', '/api/auth/register', [
+    //         'name' => '',
+    //         'email' => 'wrong_email.com',
+    //         'password' => 'password',
+    //     ]);
+    //     $response
+    //         ->assertStatus(422)
+    //         ->assertJsonStructure([
+    //             'message',
+    //             'errors' => ['name', 'email', 'password'],
+    //         ]);
+    //     $this->assertDatabaseMissing('users', [
+    //         'name' => $user->name,
+    //     ]);
+    // }
 
     public function test_user_can_login()
     {

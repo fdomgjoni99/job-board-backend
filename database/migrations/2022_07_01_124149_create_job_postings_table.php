@@ -21,6 +21,9 @@ return new class extends Migration {
             $table->boolean('published');
             $table->foreignId('category_id');
             $table->foreignId('company_id');
+            $table->foreignId('experience_level_id');
+            $table->foreignId('job_type_id');
+            $table->foreignId('location_type_id');
             $table->timestamps();
         });
     }
