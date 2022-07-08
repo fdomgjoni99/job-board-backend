@@ -26,6 +26,7 @@ class AuthTest extends TestCase
             'name' => $user->name,
             'email' => $user->email,
             'password' => 'passwordA0!',
+            'password_confirmation' => 'passwordA0!',
             'about' => $company->about,
             'location' => $company->location,
             'profile_image' => $company->profile_image,

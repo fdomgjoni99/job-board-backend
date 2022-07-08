@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -16,9 +17,16 @@ class AuthController extends Controller
             'email' => 'required|email',
             'about' => 'required|min:50|max:5000',
             'location' => 'required|min:3|max:400',
-            'profile_image' => 'nullable',
-            'password' =>
-                'regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/',
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
+            'password_confirmation' => 'required|same:password',
         ]);
         $password = Hash::make($request->password);
         $user = User::make(
